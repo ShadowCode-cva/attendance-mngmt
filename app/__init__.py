@@ -11,12 +11,8 @@ jwt = JWTManager()
 bcrypt = Bcrypt()
 
 def create_app(config_name='dev'):
-    import os
-    # Determine project root (one level up from 'app/' package)
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    public_dir = os.path.join(project_root, 'public')
-    
-    app = Flask(__name__, static_folder=public_dir, static_url_path='')
+    # Pure API server — no static files (Vercel CDN serves public/)
+    app = Flask(__name__)
     app.config.from_object(config_by_name[config_name])
     app.json_provider_class = MongoJSONProvider
     app.json = MongoJSONProvider(app)
@@ -44,7 +40,6 @@ def create_app(config_name='dev'):
         mongo.init_app(app)
     except Exception as e:
         logger.error(f"Failed to initialize MongoDB: {str(e)}")
-        # Don't fail on MongoDB init - it might not be configured yet
     
     jwt.init_app(app)
     bcrypt.init_app(app)
@@ -74,17 +69,6 @@ def create_app(config_name='dev'):
     app.register_blueprint(staff_bp, url_prefix='/api/staff')
     app.register_blueprint(student_bp, url_prefix='/api/student')
     app.register_blueprint(metadata_bp, url_prefix='/api/metadata')
-
-    @app.route('/')
-    def index():
-        return app.send_static_file('index.html')
-
-    @app.route('/<path:path>')
-    def serve_static(path):
-        try:
-            return app.send_static_file(path)
-        except:
-            return {"success": False, "error": "NOT_FOUND", "message": "Resource not found."}, 404
 
     @app.route('/health')
     def health():
