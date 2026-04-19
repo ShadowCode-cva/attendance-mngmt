@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Portal | EduSync</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="staff.css">
+</head>
+<body class="staff-body">
+    <div class="background-overlay"></div>
+    
+    <nav>
+        <div class="logo">EDU<span>SYNC</span> STAFF</div>
+        <div id="user-info" class="hidden">
+            <span id="staff-name"></span>
+            <button id="logout-btn" class="logout-link">Logout</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Login Section -->
+        <section id="login-section" class="auth-card glass animate-up">
+            <h2>Welcome Back</h2>
+            <p>Please enter your credentials to access the portal.</p>
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Email Address">
+                <div class="password-wrapper" style="position: relative; width: 100%;">
+                    <input type="password" id="password" placeholder="Password" style="width: 100%;">
+                    <button type="button" class="toggle-password" data-target="password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1rem;">👁️</button>
+                </div>
+            </div>
+            <button id="login-btn" class="primary-btn">Sign In</button>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="staff-dashboard" class="dashboard-container hidden">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="mark-tab">Mark Attendance</button>
+                <button class="tab-btn" data-tab="report-tab">View Reports</button>
+            </div>
+
+            <!-- Mark Attendance Tab -->
+            <div id="mark-tab" class="tab-content">
+                <div class="control-grid glass animate-up">
+                    <div class="field">
+                        <label>Year</label>
+                        <select id="year-select"></select>
+                    </div>
+                    <div class="field">
+                        <label>Department</label>
+                        <select id="dept-select"></select>
+                    </div>
+                    <div class="field">
+                        <label>Subject</label>
+                        <select id="subject-select">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Hour</label>
+                        <select id="hour-select">
+                            <option value="1">Hour 1</option>
+                            <option value="2">Hour 2</option>
+                            <option value="3">Hour 3</option>
+                            <option value="4">Hour 4</option>
+                            <option value="5">Hour 5</option>
+                            <option value="6">Hour 6</option>
+                            <option value="7">Hour 7</option>
+                            <option value="8">Hour 8</option>
+                        </select>
+                    </div>
+                    <button id="load-students-btn" class="primary-btn">Load Students</button>
+                </div>
+
+                <div id="attendance-list-container" class="hidden animate-up delay-1">
+                    <div class="table-header">
+                        <span class="count-badge">Total Students: <span id="student-count">0</span></span>
+                        <div class="bulk-actions">
+                            <button id="all-present-btn">All Present</button>
+                        </div>
+                    </div>
+                    <div class="student-table glass">
+                        <table id="attendance-table">
+                            <thead>
+                                <tr>
+                                    <th>Reg No</th>
+                                    <th>Student Name</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-list-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button id="submit-attendance-btn" class="submit-btn">Submit Attendance</button>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="report-tab" class="tab-content hidden">
+                <div class="control-grid glass animate-up">
+                    <div class="field">
+                        <label>Year</label>
+                        <select id="rep-year-select"></select>
+                    </div>
+                    <div class="field">
+                        <label>Department</label>
+                        <select id="rep-dept-select"></select>
+                    </div>
+                    <div class="field">
+                        <label>Date</label>
+                        <input type="date" id="rep-date-select">
+                    </div>
+                    <div class="field">
+                        <label>Subject</label>
+                        <select id="rep-subject-select"></select>
+                    </div>
+                    <button id="gen-report-btn" class="primary-btn">Generate</button>
+                </div>
+
+                <div id="report-result" class="hidden animate-up delay-1">
+                    <!-- Report stats will appear here -->
+                </div>
+            </div>
+        </section>
+
+        <div id="loader" class="loader-container hidden">
+            <div class="spinner"></div>
+        </div>
+    </main>
+
+    <script src="staff.js"></script>
+</body>
+</html>
