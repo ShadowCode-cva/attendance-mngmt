@@ -37,7 +37,12 @@ def create_app(config_name='dev'):
         logger.warning("JWT_SECRET_KEY environment variable is not set")
 
     # Initialize Extensions
-    mongo.init_app(app)
+    try:
+        mongo.init_app(app)
+    except Exception as e:
+        logger.error(f"Failed to initialize MongoDB: {str(e)}")
+        # Don't fail on MongoDB init - it might not be configured yet
+    
     jwt.init_app(app)
     bcrypt.init_app(app)
     CORS(app)
