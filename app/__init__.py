@@ -17,22 +17,34 @@ def create_app(config_name='dev'):
     app.json_provider_class = MongoJSONProvider
     app.json = MongoJSONProvider(app)
 
+    # Logging Configuration (Clean format)
+    import logging
+    import os
+    logging.basicConfig(level=logging.INFO, 
+                        format='[%(asctime)s] %(levelname)s: %(message)s',
+                        datefmt='%H:%M:%S')
+    
+    logger = logging.getLogger(__name__)
+    
+    # Check for required environment variables
+    mongo_uri = os.getenv('MONGO_URI')
+    if not mongo_uri:
+        logger.warning("MONGO_URI environment variable is not set")
+    
+    jwt_secret = os.getenv('JWT_SECRET_KEY')
+    if not jwt_secret:
+        logger.warning("JWT_SECRET_KEY environment variable is not set")
+
     # Initialize Extensions
     mongo.init_app(app)
     jwt.init_app(app)
     bcrypt.init_app(app)
     CORS(app)
 
-    # Logging Configuration (Clean format)
-    import logging
-    logging.basicConfig(level=logging.INFO, 
-                        format='[%(asctime)s] %(levelname)s: %(message)s',
-                        datefmt='%H:%M:%S')
-
     # Global Error Handler
     @app.errorhandler(Exception)
     def handle_exception(e):
-        app.logger.error(f"Unhandled Exception: {str(e)}")
+        app.logger.error(f"Unhandled Exception: {str(e)}", exc_info=True)
         return {"success": False, "error": "INTERNAL_SERVER_ERROR", "message": "An unexpected error occurred."}, 500
 
     @app.errorhandler(404)
@@ -60,6 +72,29 @@ def create_app(config_name='dev'):
 
     @app.route('/health')
     def health():
-        return {"status": "healthy"}, 200
+        mongo_connected = False
+        try:
+            # Try to ping MongoDB
+            mongo.db.command('ping')
+            mongo_connected = True
+        except Exception as e:
+            logger.warning(f"MongoDB connection check failed: {str(e)}")
+        
+        return {
+            "status": "healthy", 
+            "mongo_connected": mongo_connected,
+            "environment": config_name
+        }, 200 if mongo_connected else 503
+
+    @app.route('/config-check')
+    def config_check():
+        """Debug endpoint to check configuration (remove in production)"""
+        return {
+            "mongo_uri_set": bool(os.getenv('MONGO_URI')),
+            "jwt_secret_set": bool(os.getenv('JWT_SECRET_KEY')),
+            "secret_key_set": bool(os.getenv('SECRET_KEY')),
+            "debug_mode": app.debug,
+            "flask_env": os.getenv('FLASK_ENV', 'not set')
+        }, 200
 
     return app
