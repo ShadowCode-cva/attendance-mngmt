@@ -24,4 +24,3 @@ if app is None:
 if __name__ == "__main__":
     # This block is ignored by Gunicorn/Vercel, but useful if run directly
     app.run(debug=False)
-
