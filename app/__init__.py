@@ -72,9 +72,8 @@ def create_app(config_name='dev'):
     app.register_blueprint(student_bp, url_prefix='/api/student')
     app.register_blueprint(metadata_bp, url_prefix='/api/metadata')
 
-    @app.route('/')
-    def index():
-        return {"success": True, "message": "Attendance Management System API is running"}, 200
+    # On Vercel, the root "/" is served by public/index.html (static).
+    # This Flask app only handles /api/* routes.
 
     @app.route('/health')
     def health():
