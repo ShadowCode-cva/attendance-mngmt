@@ -11,8 +11,9 @@ jwt = JWTManager()
 bcrypt = Bcrypt()
 
 def create_app(config_name='dev'):
-    # Point static_folder to the frontend directory
-    app = Flask(__name__, static_folder='../frontend', static_url_path='/')
+    # Don't serve static files from Flask on Vercel
+    # The frontend should be deployed separately or served via vercel.json
+    app = Flask(__name__)
     app.config.from_object(config_by_name[config_name])
     app.json_provider_class = MongoJSONProvider
     app.json = MongoJSONProvider(app)
@@ -68,7 +69,7 @@ def create_app(config_name='dev'):
 
     @app.route('/')
     def index():
-        return app.send_static_file('index.html')
+        return {"success": True, "message": "Attendance Management System API is running"}, 200
 
     @app.route('/health')
     def health():
